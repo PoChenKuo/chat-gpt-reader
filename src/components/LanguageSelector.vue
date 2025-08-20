@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { LANGUAGES } from '@/config/languages'
 
 const { locale } = useI18n()
 
-const languages = [
-  { code: 'zh-tw', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'en', name: 'English', flag: '🇺🇸' }
-]
+const languages = LANGUAGES
 </script>
 
 <template>

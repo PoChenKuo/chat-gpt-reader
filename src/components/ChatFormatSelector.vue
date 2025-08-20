@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { CHAT_FORMATS } from '@/config/chat-formats'
 
-
-
+// --- Props and Emits ---
 interface Props {
   modelValue: {
     userPrefix: string
@@ -18,54 +18,22 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+// --- State ---
 const { t, locale } = useI18n()
-
-// Chat formats that respond to language changes
-const chatFormats = computed(() => {
-  // Force reactivity by accessing locale.value
-
-  return [
-    {
-      id: 'chatgpt-default',
-      name: t('app.formats.chatgptDefault.name'),
-      userPrefix: t('app.formats.chatgptDefault.userPrefix'),
-      assistantPrefix: t('app.formats.chatgptDefault.assistantPrefix'),
-      description: t('app.formats.chatgptDefault.description')
-    },
-    {
-      id: 'chatgpt-new',
-      name: t('app.formats.chatgptNew.name'),
-      userPrefix: t('app.formats.chatgptNew.userPrefix'),
-      assistantPrefix: t('app.formats.chatgptNew.assistantPrefix'),
-      description: t('app.formats.chatgptNew.description')
-    },
-    {
-      id: 'claude',
-      name: t('app.formats.claude.name'),
-      userPrefix: t('app.formats.claude.userPrefix'),
-      assistantPrefix: t('app.formats.claude.assistantPrefix'),
-      description: t('app.formats.claude.description')
-    },
-    {
-      id: 'bard',
-      name: t('app.formats.bard.name'),
-      userPrefix: t('app.formats.bard.userPrefix'),
-      assistantPrefix: t('app.formats.bard.assistantPrefix'),
-      description: t('app.formats.bard.description')
-    },
-    {
-      id: 'custom',
-      name: t('app.formats.custom.name'),
-      userPrefix: t('app.formats.custom.userPrefix'),
-      assistantPrefix: t('app.formats.custom.assistantPrefix'),
-      description: t('app.formats.custom.description')
-    }
-  ]
-})
-
 const selectedFormatId = ref('chatgpt-default')
 const customUserPrefix = ref('')
 const customAssistantPrefix = ref('')
+
+// --- Computed Properties ---
+const chatFormats = computed(() => {
+  return CHAT_FORMATS.map(format => ({
+    ...format,
+    name: t(format.nameKey),
+    userPrefix: t(format.userPrefixKey),
+    assistantPrefix: t(format.assistantPrefixKey),
+    description: t(format.descriptionKey)
+  }))
+})
 
 const selectedFormat = computed(() => {
   return chatFormats.value.find(format => format.id === selectedFormatId.value) || chatFormats.value[0]
@@ -101,11 +69,11 @@ const assistantPrefix = computed({
   }
 })
 
+// --- Methods ---
 const updateModelValue = () => {
-  emit('update:modelValue', {
-    userPrefix: userPrefix.value,
-    assistantPrefix: assistantPrefix.value
-  })
+  const userPrefix = isCustomFormat.value ? customUserPrefix.value : selectedFormat.value.userPrefix
+  const assistantPrefix = isCustomFormat.value ? customAssistantPrefix.value : selectedFormat.value.assistantPrefix
+  emit('update:modelValue', { userPrefix, assistantPrefix })
 }
 
 const updateCustomPrefixes = (userPrefix: string, assistantPrefix: string) => {
@@ -113,7 +81,7 @@ const updateCustomPrefixes = (userPrefix: string, assistantPrefix: string) => {
   customAssistantPrefix.value = assistantPrefix
 }
 
-// Watch for format changes
+// --- Watchers ---
 watch(selectedFormatId, (newFormatId) => {
   const format = chatFormats.value.find(f => f.id === newFormatId)
   if (format && format.id !== 'custom') {
@@ -122,9 +90,7 @@ watch(selectedFormatId, (newFormatId) => {
   updateModelValue()
 })
 
-// Initialize with current model value
 watch(() => props.modelValue, (newValue) => {
-  // Find if current values match any predefined format
   const matchingFormat = chatFormats.value.find(format =>
     format.userPrefix === newValue.userPrefix &&
     format.assistantPrefix === newValue.assistantPrefix
@@ -138,14 +104,10 @@ watch(() => props.modelValue, (newValue) => {
   }
 }, { immediate: true })
 
-// Watch for locale changes to update format display
 watch(locale, () => {
-  // Force recomputation of chat formats when language changes
-  // The computed property will automatically update the display
   updateModelValue()
 })
 
-// New watcher for custom prefixes
 watch([customUserPrefix, customAssistantPrefix], () => {
   if (isCustomFormat.value) {
     updateModelValue()
