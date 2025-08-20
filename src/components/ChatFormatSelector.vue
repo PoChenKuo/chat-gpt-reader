@@ -20,7 +20,7 @@ const emit = defineEmits<Emits>()
 
 // --- State ---
 const { t, locale } = useI18n()
-const selectedFormatId = ref('chatgpt-default')
+const selectedFormatId = ref('')
 const customUserPrefix = ref('')
 const customAssistantPrefix = ref('')
 
@@ -40,34 +40,6 @@ const selectedFormat = computed(() => {
 })
 
 const isCustomFormat = computed(() => selectedFormatId.value === 'custom')
-
-const userPrefix = computed({
-  get: () => {
-    if (isCustomFormat.value) {
-      return customUserPrefix.value
-    }
-    return selectedFormat.value.userPrefix
-  },
-  set: (value: string) => {
-    if (isCustomFormat.value) {
-      customUserPrefix.value = value
-    }
-  }
-})
-
-const assistantPrefix = computed({
-  get: () => {
-    if (isCustomFormat.value) {
-      return customAssistantPrefix.value
-    }
-    return selectedFormat.value.assistantPrefix
-  },
-  set: (value: string) => {
-    if (isCustomFormat.value) {
-      customAssistantPrefix.value = value
-    }
-  }
-})
 
 // --- Methods ---
 const updateModelValue = () => {
@@ -113,6 +85,7 @@ watch([customUserPrefix, customAssistantPrefix], () => {
     updateModelValue()
   }
 })
+selectedFormatId.value = 'chatgpt-default'
 </script>
 
 <template>

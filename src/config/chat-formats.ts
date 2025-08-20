@@ -15,27 +15,6 @@ export const CHAT_FORMATS: ChatFormat[] = [
     descriptionKey: 'app.formats.chatgptDefault.description'
   },
   {
-    id: 'chatgpt-new',
-    nameKey: 'app.formats.chatgptNew.name',
-    userPrefixKey: 'app.formats.chatgptNew.userPrefix',
-    assistantPrefixKey: 'app.formats.chatgptNew.assistantPrefix',
-    descriptionKey: 'app.formats.chatgptNew.description'
-  },
-  {
-    id: 'claude',
-    nameKey: 'app.formats.claude.name',
-    userPrefixKey: 'app.formats.claude.userPrefix',
-    assistantPrefixKey: 'app.formats.claude.assistantPrefix',
-    descriptionKey: 'app.formats.claude.description'
-  },
-  {
-    id: 'bard',
-    nameKey: 'app.formats.bard.name',
-    userPrefixKey: 'app.formats.bard.userPrefix',
-    assistantPrefixKey: 'app.formats.bard.assistantPrefix',
-    descriptionKey: 'app.formats.bard.description'
-  },
-  {
     id: 'custom',
     nameKey: 'app.formats.custom.name',
     userPrefixKey: 'app.formats.custom.userPrefix',

@@ -51,7 +51,6 @@ Assistant: My response here
 ChatGPT 說：我的回應
 ```
 
-
 **Custom Format:**
 
 ```
@@ -94,7 +93,6 @@ npm run preview
 Sample chat files are included in the project root:
 
 - `sample-chat.txt` - ChatGPT format conversation (English)
-- `sample-claude-chat.txt` - Claude format conversation (English)
 - `sample-zh-tw-chat.txt` - ChatGPT format conversation with localized prefixes (Traditional Chinese)
 
 ## Technologies Used

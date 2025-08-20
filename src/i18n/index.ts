@@ -48,24 +48,6 @@ const messages = {
           userPrefix: 'User:',
           assistantPrefix: 'Assistant:',
         },
-        chatgptNew: {
-          name: 'ChatGPT New',
-          description: 'Newer ChatGPT format',
-          userPrefix: 'Human:',
-          assistantPrefix: 'Assistant:',
-        },
-        claude: {
-          name: 'Claude',
-          description: 'Anthropic Claude format',
-          userPrefix: 'Human:',
-          assistantPrefix: 'Claude:',
-        },
-        bard: {
-          name: 'Google Bard',
-          description: 'Google Bard format',
-          userPrefix: 'User:',
-          assistantPrefix: 'Bard:',
-        },
         custom: {
           name: 'Custom',
           description: 'Define your own format',
@@ -122,24 +104,6 @@ const messages = {
           description: '標準 ChatGPT 格式',
           userPrefix: '你說：',
           assistantPrefix: 'ChatGPT 說：',
-        },
-        chatgptNew: {
-          name: 'ChatGPT 新版',
-          description: '新版 ChatGPT 格式',
-          userPrefix: '你說：',
-          assistantPrefix: 'ChatGPT 說：',
-        },
-        claude: {
-          name: 'Claude',
-          description: 'Anthropic Claude 格式',
-          userPrefix: '你說：',
-          assistantPrefix: 'Claude 說：',
-        },
-        bard: {
-          name: 'Google Bard',
-          description: 'Google Bard 格式',
-          userPrefix: '你說：',
-          assistantPrefix: 'Bard 說：',
         },
         custom: {
           name: '自訂',
