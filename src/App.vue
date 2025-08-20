@@ -11,11 +11,12 @@ const isConfigOpen = ref(true) // Open by default
 // Message visibility toggles
 const showAssistantMessages = ref(true)
 const showUserMessages = ref(true)
+const showResourceHint = ref(true)
 
 interface ChatMessage {
   role: 'user' | 'service'
   content: string
-  timestamp: string
+  timestamp: string | null
 }
 
 const { t } = useI18n()
@@ -45,7 +46,8 @@ const chatMessages = computed(() => {
         messages.push({
           role: currentRole,
           content: currentContent.join('\n').trim(),
-          timestamp: new Date().toLocaleString()
+          timestamp: null
+          // timestamp:  //new Date().toLocaleString()
         })
       }
 
@@ -58,7 +60,8 @@ const chatMessages = computed(() => {
         messages.push({
           role: currentRole,
           content: currentContent.join('\n').trim(),
-          timestamp: new Date().toLocaleString()
+          timestamp: null
+          // new Date().toLocaleString()
         })
       }
 
@@ -156,10 +159,12 @@ const toggleConfig = () => {
     <!-- Configuration Tray -->
     <ConfigurationTray :is-open="isConfigOpen" :file-name="fileName" :is-drag-over="isDragOver"
       :format-config="formatConfig" :show-assistant-messages="showAssistantMessages"
-      :show-user-messages="showUserMessages" @update:is-open="isConfigOpen = $event"
-      @update:format-config="formatConfig = $event" @update:show-assistant-messages="showAssistantMessages = $event"
-      @update:show-user-messages="showUserMessages = $event" @file-upload="handleFileUpload" @file-drop="handleDrop"
-      @drag-over="handleDragOver" @drag-enter="handleDragEnter" @drag-leave="handleDragLeave" @clear-file="clearFile" />
+      :show-resource-hint="showResourceHint" :show-user-messages="showUserMessages"
+      @update:is-open="isConfigOpen = $event" @update:format-config="formatConfig = $event"
+      @update:show-assistant-messages="showAssistantMessages = $event"
+      @update:show-user-messages="showUserMessages = $event" @update:show-resource-hint="showResourceHint = $event"
+      @file-upload="handleFileUpload" @file-drop="handleDrop" @drag-over="handleDragOver" @drag-enter="handleDragEnter"
+      @drag-leave="handleDragLeave" @clear-file="clearFile" />
 
     <header class="header">
       <h1>{{ t('app.title') }}</h1>
@@ -168,7 +173,7 @@ const toggleConfig = () => {
 
     <main class="main">
       <ChatDisplay :chat-messages="chatMessages" :show-user-messages="showUserMessages"
-        :show-assistant-messages="showAssistantMessages" :file-name="fileName" />
+        :show-assistant-messages="showAssistantMessages" :show-resource-hint="showResourceHint" :file-name="fileName" />
     </main>
   </div>
 </template>

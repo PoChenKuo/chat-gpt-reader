@@ -11,6 +11,7 @@ interface Props {
   chatMessages: ChatMessage[]
   showUserMessages: boolean
   showAssistantMessages: boolean
+  showResourceHint: boolean
   fileName: string
 }
 
@@ -159,7 +160,7 @@ const printChat = () => {
       <div v-for="(message, index) in chatMessages" :key="index"
         v-show="(message.role === 'user' && showUserMessages) || (message.role === 'service' && showAssistantMessages)"
         :class="['message', `message-${message.role}`]">
-        <div class="message-header" v-show="showUserMessages && showAssistantMessages">
+        <div class="message-header" v-show="showResourceHint">
           <span class="message-role">
             {{ message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant') }}
           </span>
@@ -245,6 +246,10 @@ const printChat = () => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  background: rgb(173, 182, 201);
+  border-radius: 15px;
+  padding: 0.75rem;
+  box-sizing: border-box;
 }
 
 .chat-container.single-side .message {

@@ -13,6 +13,7 @@ interface Props {
   }
   showAssistantMessages: boolean
   showUserMessages: boolean
+  showResourceHint: boolean
 }
 
 interface Emits {
@@ -20,6 +21,7 @@ interface Emits {
   (e: 'update:formatConfig', value: { userPrefix: string; assistantPrefix: string }): void
   (e: 'update:showAssistantMessages', value: boolean): void
   (e: 'update:showUserMessages', value: boolean): void
+  (e: 'update:showResourceHint', value: boolean): void
   (e: 'fileUpload', event: Event): void
   (e: 'fileDrop', event: DragEvent): void
   (e: 'dragOver', event: DragEvent): void
@@ -45,6 +47,11 @@ const handleAssistantToggle = (event: Event) => {
 const handleUserToggle = (event: Event) => {
   const target = event.target as HTMLInputElement
   emit('update:showUserMessages', target.checked)
+}
+
+const handleHintToggle = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:showResourceHint', target.checked)
 }
 </script>
 
@@ -109,6 +116,16 @@ const handleUserToggle = (event: Event) => {
               <span class="toggle-text">{{ t('app.config.showUser') }}</span>
             </label>
           </div>
+          <div class="toggle-item">
+            <label class="toggle-label">
+              <input type="checkbox" :checked="showResourceHint" @change="handleHintToggle" class="toggle-input" />
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">Show Resource Hint</span>
+            </label>
+          </div>
+          <br />
+
+
         </div>
       </div>
     </div>
