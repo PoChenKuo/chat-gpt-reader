@@ -1,11 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-interface ChatMessage {
-  role: 'user' | 'service'
-  content: string
-  timestamp: string
-}
+import { printChat } from '@/utils/print'
+import type { ChatMessage } from '@/utils/print'
 
 interface Props {
   chatMessages: ChatMessage[]
@@ -18,127 +15,23 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 
-const printChat = () => {
-  if (props.chatMessages.length === 0) {
-    alert(t('app.print.noMessages'))
-    return
-  }
+const filteredMessages = computed(() => {
+  return props.chatMessages.filter(
+    message =>
+      (message.role === 'user' && props.showUserMessages) ||
+      (message.role === 'service' && props.showAssistantMessages)
+  )
+})
 
-  // Create a print-friendly version of the chat
-  const printWindow = window.open('', '_blank')
-  if (!printWindow) {
-    alert(t('app.print.popupBlocked'))
-    return
-  }
-
-  const printContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>${t('app.print.title')}</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 20px;
-          background: white;
-          color: #333;
-        }
-        .header {
-          text-align: center;
-          margin-bottom: 30px;
-          border-bottom: 2px solid #e5e7eb;
-          padding-bottom: 15px;
-        }
-        .title {
-          font-size: 24px;
-          font-weight: bold;
-          color: #1f2937;
-          margin: 0 0 10px 0;
-        }
-        .file-info {
-          font-size: 14px;
-          color: #6b7280;
-          margin: 0;
-        }
-        .message {
-          margin-bottom: 20px;
-          padding: 15px;
-          border-radius: 8px;
-          max-width: 100%;
-          word-wrap: break-word;
-          page-break-inside: avoid;
-        }
-        .message-user {
-          background: #3b82f6;
-          color: white;
-          margin-left: 50px;
-          border-radius: 18px 18px 4px 18px;
-        }
-        .message-service {
-          background: #f3f4f6;
-          color: #374151;
-          margin-right: 50px;
-          border-radius: 18px 18px 18px 4px;
-        }
-        .message-header {
-          margin-bottom: 8px;
-        }
-        .message-role {
-          font-weight: bold;
-          font-size: 12px;
-          opacity: 0.8;
-        }
-        .message-time {
-          font-size: 10px;
-          opacity: 0.7;
-          margin-left: 10px;
-        }
-        .message-content {
-          line-height: 1.5;
-          white-space: pre-wrap;
-        }
-        @media print {
-          body { margin: 0; }
-          .message { page-break-inside: avoid; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1 class="title">${t('app.print.title')}</h1>
-        ${props.fileName ? `<p class="file-info">${t('app.print.sourceFile')}: ${props.fileName}</p>` : ''}
-      </div>
-      <div class="messages">
-        ${props.chatMessages
-      .filter(message =>
-        (message.role === 'user' && props.showUserMessages) ||
-        (message.role === 'service' && props.showAssistantMessages)
-      )
-      .map(message => `
-            <div class="message message-${message.role}">
-              ${props.showUserMessages && props.showAssistantMessages ? `
-                <div class="message-header">
-                  <span class="message-role">${message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant')}</span>
-                  <span class="message-time">${message.timestamp}</span>
-                </div>
-              ` : ''}
-              <div class="message-content">${message.content}</div>
-            </div>
-          `).join('')}
-      </div>
-    </body>
-    </html>
-  `
-
-  printWindow.document.write(printContent)
-  printWindow.document.close()
-
-  // Wait for content to load, then print
-  printWindow.onload = () => {
-    printWindow.print()
-    printWindow.close()
-  }
+const handlePrint = () => {
+  printChat(
+    filteredMessages.value,
+    t('app.print.title'),
+    props.fileName,
+    t,
+    props.showUserMessages,
+    props.showAssistantMessages
+  )
 }
 </script>
 
@@ -146,8 +39,8 @@ const printChat = () => {
   <!-- Chat Display -->
   <section v-if="chatMessages.length > 0" class="chat-section">
     <div class="chat-header">
-      <h3>{{ t('app.chat.title') }} ({{ chatMessages.length }} {{ t('app.chat.messages') }})</h3>
-      <button @click="printChat" class="print-btn" :title="t('app.print.printButton')">
+      <h3>{{ t('app.chat.title') }} ({{ filteredMessages.length }} {{ t('app.chat.messages') }})</h3>
+      <button @click="handlePrint" class="print-btn" :title="t('app.print.printButton')">
         <svg class="print-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="6,9 6,2 18,2 18,9"></polyline>
           <path d="M6,18H4a2,2,0,0,1-2-2V11a2,2,0,0,1,2-2H20a2,2,0,0,1,2,2v5a2,2,0,0,1-2,2H18"></path>
@@ -157,9 +50,11 @@ const printChat = () => {
       </button>
     </div>
     <div class="chat-container" :class="{ 'single-side': !showUserMessages || !showAssistantMessages }">
-      <div v-for="(message, index) in chatMessages" :key="index"
-        v-show="(message.role === 'user' && showUserMessages) || (message.role === 'service' && showAssistantMessages)"
-        :class="['message', `message-${message.role}`]">
+      <div
+        v-for="(message, index) in filteredMessages"
+        :key="index"
+        :class="['message', `message-${message.role}`]"
+      >
         <div class="message-header" v-show="showResourceHint">
           <span class="message-role">
             {{ message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant') }}
@@ -357,5 +252,72 @@ const printChat = () => {
 .no-messages p {
   margin: 0;
   color: #6b7280;
+}
+
+@media print {
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: white;
+    color: #333;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 15px;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+  }
+  .file-info {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+  .message {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 100%;
+    word-wrap: break-word;
+    page-break-inside: avoid;
+  }
+  .message-user {
+    background: #3b82f6;
+    color: white;
+    margin-left: 50px;
+    border-radius: 18px 18px 4px 18px;
+  }
+  .message-service {
+    background: #f3f4f6;
+    color: #374151;
+    margin-right: 50px;
+    border-radius: 18px 18px 18px 4px;
+  }
+  .message-header {
+    margin-bottom: 8px;
+  }
+  .message-role {
+    font-weight: bold;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 10px;
+  }
+  .message-content {
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .print-btn {
+    display: none;
+  }
 }
 </style>
