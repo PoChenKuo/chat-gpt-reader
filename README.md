@@ -20,17 +20,11 @@ The application comes with pre-configured formats for popular AI chat services w
 **English:**
 
 - **ChatGPT Default**: `User:` / `Assistant:`
-- **ChatGPT New**: `Human:` / `Assistant:`
-- **Claude**: `Human:` / `Claude:`
-- **Google Bard**: `User:` / `Bard:`
 - **Custom**: Define your own format
 
 **Traditional Chinese (繁體中文):**
 
 - **ChatGPT 預設**: `你說：` / `ChatGPT 說：`
-- **ChatGPT 新版**: `你說：` / `ChatGPT 說：`
-- **Claude**: `你說：` / `Claude 說：`
-- **Google Bard**: `你說：` / `Bard 說：`
 - **自訂**: 定義您自己的格式
 
 ## How to Use
@@ -50,13 +44,6 @@ User: Your message here
 Assistant: My response here
 ```
 
-**English - Claude:**
-
-```
-Human: Your message here
-Claude: My response here
-```
-
 **Traditional Chinese - ChatGPT Default:**
 
 ```
@@ -64,12 +51,6 @@ Claude: My response here
 ChatGPT 說：我的回應
 ```
 
-**Traditional Chinese - Claude:**
-
-```
-你說：您的訊息
-Claude 說：我的回應
-```
 
 **Custom Format:**
 
