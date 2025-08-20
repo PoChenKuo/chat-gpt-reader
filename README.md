@@ -13,6 +13,9 @@ A Vue.js application that allows you to upload plain text files containing ChatG
 - **Internationalization**: Built with Vue I18n for easy localization
 - **Multi-language Support**: Traditional Chinese (繁體中文) and English
 
+## Demo
+https://pochenkuo.github.io/chat-gpt-reader/
+
 ## Supported Chat Formats
 
 The application comes with pre-configured formats for popular AI chat services with localized prefixes:
