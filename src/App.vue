@@ -232,7 +232,7 @@ const toggleConfig = () => {
           <div v-for="(message, index) in chatMessages" :key="index"
             v-show="(message.role === 'user' && showUserMessages) || (message.role === 'service' && showAssistantMessages)"
             :class="['message', `message-${message.role}`]">
-            <div class="message-header">
+            <div class="message-header" v-show="showUserMessages && showAssistantMessages">
               <span class="message-role">
                 {{ message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant') }}
               </span>
