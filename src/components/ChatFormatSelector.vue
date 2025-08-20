@@ -84,7 +84,6 @@ const userPrefix = computed({
     if (isCustomFormat.value) {
       customUserPrefix.value = value
     }
-    updateModelValue()
   }
 })
 
@@ -99,7 +98,6 @@ const assistantPrefix = computed({
     if (isCustomFormat.value) {
       customAssistantPrefix.value = value
     }
-    updateModelValue()
   }
 })
 
@@ -110,12 +108,16 @@ const updateModelValue = () => {
   })
 }
 
+const updateCustomPrefixes = (userPrefix: string, assistantPrefix: string) => {
+  customUserPrefix.value = userPrefix
+  customAssistantPrefix.value = assistantPrefix
+}
+
 // Watch for format changes
 watch(selectedFormatId, (newFormatId) => {
   const format = chatFormats.value.find(f => f.id === newFormatId)
   if (format && format.id !== 'custom') {
-    customUserPrefix.value = format.userPrefix
-    customAssistantPrefix.value = format.assistantPrefix
+    updateCustomPrefixes(format.userPrefix, format.assistantPrefix)
   }
   updateModelValue()
 })
@@ -132,8 +134,7 @@ watch(() => props.modelValue, (newValue) => {
     selectedFormatId.value = matchingFormat.id
   } else {
     selectedFormatId.value = 'custom'
-    customUserPrefix.value = newValue.userPrefix
-    customAssistantPrefix.value = newValue.assistantPrefix
+    updateCustomPrefixes(newValue.userPrefix, newValue.assistantPrefix)
   }
 }, { immediate: true })
 
@@ -142,6 +143,13 @@ watch(locale, () => {
   // Force recomputation of chat formats when language changes
   // The computed property will automatically update the display
   updateModelValue()
+})
+
+// New watcher for custom prefixes
+watch([customUserPrefix, customAssistantPrefix], () => {
+  if (isCustomFormat.value) {
+    updateModelValue()
+  }
 })
 </script>
 
