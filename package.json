@@ -18,6 +18,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "jspdf": "^3.0.1",
     "vue": "^3.5.18",
     "vue-i18n": "^9.14.5"
   },

@@ -143,6 +143,129 @@ const clearFile = () => {
 const toggleConfig = () => {
   isConfigOpen.value = !isConfigOpen.value
 }
+
+const printChat = () => {
+  if (chatMessages.value.length === 0) {
+    alert(t('app.print.noMessages'))
+    return
+  }
+
+  // Create a print-friendly version of the chat
+  const printWindow = window.open('', '_blank')
+  if (!printWindow) {
+    alert(t('app.print.popupBlocked'))
+    return
+  }
+
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${t('app.print.title')}</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          background: white;
+          color: #333;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+          border-bottom: 2px solid #e5e7eb;
+          padding-bottom: 15px;
+        }
+        .title {
+          font-size: 24px;
+          font-weight: bold;
+          color: #1f2937;
+          margin: 0 0 10px 0;
+        }
+        .file-info {
+          font-size: 14px;
+          color: #6b7280;
+          margin: 0;
+        }
+        .message {
+          margin-bottom: 20px;
+          padding: 15px;
+          border-radius: 8px;
+          max-width: 100%;
+          word-wrap: break-word;
+          page-break-inside: avoid;
+        }
+        .message-user {
+          background: #3b82f6;
+          color: white;
+          margin-left: 50px;
+          border-radius: 18px 18px 4px 18px;
+        }
+        .message-service {
+          background: #f3f4f6;
+          color: #374151;
+          margin-right: 50px;
+          border-radius: 18px 18px 18px 4px;
+        }
+        .message-header {
+          margin-bottom: 8px;
+        }
+        .message-role {
+          font-weight: bold;
+          font-size: 12px;
+          opacity: 0.8;
+        }
+        .message-time {
+          font-size: 10px;
+          opacity: 0.7;
+          margin-left: 10px;
+        }
+        .message-content {
+          line-height: 1.5;
+          white-space: pre-wrap;
+        }
+        @media print {
+          body { margin: 0; }
+          .message { page-break-inside: avoid; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1 class="title">${t('app.print.title')}</h1>
+        ${fileName.value ? `<p class="file-info">${t('app.print.sourceFile')}: ${fileName.value}</p>` : ''}
+      </div>
+      <div class="messages">
+        ${chatMessages.value
+      .filter(message =>
+        (message.role === 'user' && showUserMessages.value) ||
+        (message.role === 'service' && showAssistantMessages.value)
+      )
+      .map(message => `
+            <div class="message message-${message.role}">
+              ${showUserMessages.value && showAssistantMessages.value ? `
+                <div class="message-header">
+                  <span class="message-role">${message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant')}</span>
+                  <span class="message-time">${message.timestamp}</span>
+                </div>
+              ` : ''}
+              <div class="message-content">${message.content}</div>
+            </div>
+          `).join('')}
+      </div>
+    </body>
+    </html>
+  `
+
+  printWindow.document.write(printContent)
+  printWindow.document.close()
+
+  // Wait for content to load, then print
+  printWindow.onload = () => {
+    printWindow.print()
+    printWindow.close()
+  }
+}
 </script>
 
 <template>
@@ -227,7 +350,17 @@ const toggleConfig = () => {
     <main class="main">
       <!-- Chat Display -->
       <section v-if="chatMessages.length > 0" class="chat-section">
-        <h3>{{ t('app.chat.title') }} ({{ chatMessages.length }} {{ t('app.chat.messages') }})</h3>
+        <div class="chat-header">
+          <h3>{{ t('app.chat.title') }} ({{ chatMessages.length }} {{ t('app.chat.messages') }})</h3>
+          <button @click="printChat" class="print-btn" :title="t('app.print.printButton')">
+            <svg class="print-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6,9 6,2 18,2 18,9"></polyline>
+              <path d="M6,18H4a2,2,0,0,1-2-2V11a2,2,0,0,1,2-2H20a2,2,0,0,1,2,2v5a2,2,0,0,1-2,2H18"></path>
+              <polyline points="6,14 6,18 18,18 18,14"></polyline>
+            </svg>
+            {{ t('app.print.printButton') }}
+          </button>
+        </div>
         <div class="chat-container" :class="{ 'single-side': !showUserMessages || !showAssistantMessages }">
           <div v-for="(message, index) in chatMessages" :key="index"
             v-show="(message.role === 'user' && showUserMessages) || (message.role === 'service' && showAssistantMessages)"
@@ -641,10 +774,48 @@ const toggleConfig = () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.chat-section h3 {
-  margin: 0 0 1.5rem 0;
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chat-header h3 {
+  margin: 0;
   color: #1f2937;
   font-size: 1.25rem;
+}
+
+.print-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.print-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.print-btn:active {
+  transform: translateY(0);
+}
+
+.print-icon {
+  width: 18px;
+  height: 18px;
 }
 
 .chat-container {

@@ -34,6 +34,13 @@ const messages = {
         noMessages: 'No messages found',
         noMessagesDesc: 'Try adjusting the chat format to match your file',
       },
+      print: {
+        title: 'Chat History',
+        sourceFile: 'Source File',
+        printButton: 'Print',
+        noMessages: 'No messages to print',
+        popupBlocked: 'Please allow popups to print',
+      },
       formats: {
         chatgptDefault: {
           name: 'ChatGPT Default',
@@ -100,6 +107,13 @@ const messages = {
         noFileDesc: '上傳文字檔案以檢視對話記錄',
         noMessages: '找不到訊息',
         noMessagesDesc: '請嘗試調整對話格式以符合您的檔案',
+      },
+      print: {
+        title: '對話記錄',
+        sourceFile: '來源檔案',
+        printButton: '列印',
+        noMessages: '沒有訊息可列印',
+        popupBlocked: '請允許彈出視窗以進行列印',
       },
       formats: {
         chatgptDefault: {
