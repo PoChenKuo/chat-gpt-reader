@@ -39,19 +39,9 @@ const closeTray = () => {
   emit('update:isOpen', false)
 }
 
-const handleAssistantToggle = (event: Event) => {
+const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | 'showResourceHint', event: Event) => {
   const target = event.target as HTMLInputElement
-  emit('update:showAssistantMessages', target.checked)
-}
-
-const handleUserToggle = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('update:showUserMessages', target.checked)
-}
-
-const handleHintToggle = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('update:showResourceHint', target.checked)
+  emit(`update:${propName}`, target.checked)
 }
 </script>
 
@@ -103,7 +93,7 @@ const handleHintToggle = (event: Event) => {
         <div class="toggle-group">
           <div class="toggle-item">
             <label class="toggle-label">
-              <input type="checkbox" :checked="showAssistantMessages" @change="handleAssistantToggle"
+              <input type="checkbox" :checked="showAssistantMessages" @change="handleToggle('showAssistantMessages', $event)"
                 class="toggle-input" />
               <span class="toggle-slider"></span>
               <span class="toggle-text">{{ t('app.config.showAssistant') }}</span>
@@ -111,14 +101,14 @@ const handleHintToggle = (event: Event) => {
           </div>
           <div class="toggle-item">
             <label class="toggle-label">
-              <input type="checkbox" :checked="showUserMessages" @change="handleUserToggle" class="toggle-input" />
+              <input type="checkbox" :checked="showUserMessages" @change="handleToggle('showUserMessages', $event)" class="toggle-input" />
               <span class="toggle-slider"></span>
               <span class="toggle-text">{{ t('app.config.showUser') }}</span>
             </label>
           </div>
           <div class="toggle-item">
             <label class="toggle-label">
-              <input type="checkbox" :checked="showResourceHint" @change="handleHintToggle" class="toggle-input" />
+              <input type="checkbox" :checked="showResourceHint" @change="handleToggle('showResourceHint', $event)" class="toggle-input" />
               <span class="toggle-slider"></span>
               <span class="toggle-text">Show Resource Hint</span>
             </label>
