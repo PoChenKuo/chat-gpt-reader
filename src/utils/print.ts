@@ -3,7 +3,6 @@ import type { TFunction } from 'vue-i18n'
 export interface ChatMessage {
   role: 'user' | 'service'
   content: string
-  timestamp: string
 }
 
 export const printChat = (
@@ -49,7 +48,6 @@ export const printChat = (
                   <span class="message-role">${
                     message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant')
                   }</span>
-                  <span class="message-time">${message.timestamp}</span>
                 </div>
               `
                   : ''

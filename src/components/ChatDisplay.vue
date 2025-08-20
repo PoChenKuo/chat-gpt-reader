@@ -59,7 +59,6 @@ const handlePrint = () => {
           <span class="message-role">
             {{ message.role === 'user' ? t('app.chat.user') : t('app.chat.assistant') }}
           </span>
-          <span class="message-time">{{ message.timestamp }}</span>
         </div>
         <div class="message-content">
           {{ message.content }}
@@ -195,14 +194,7 @@ const handlePrint = () => {
   color: #6b7280;
 }
 
-.message-time {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
-}
 
-.message-service .message-time {
-  color: #9ca3af;
-}
 
 .message-content {
   line-height: 1.6;
