@@ -86,10 +86,7 @@ const chatMessages = computed(() => {
   return messages
 })
 
-const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-
+const handleFileUpload = (file: File | null) => {
   if (file) {
     processFile(file)
   }

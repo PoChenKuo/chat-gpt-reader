@@ -2,11 +2,12 @@
 import { useI18n } from 'vue-i18n'
 import ChatFormatSelector from './ChatFormatSelector.vue'
 import LanguageSelector from './LanguageSelector.vue'
+import FileUpload from './FileUpload.vue'
+import MessageVisibilityToggles from './MessageVisibilityToggles.vue'
 
 interface Props {
   isOpen: boolean
   fileName: string
-  isDragOver: boolean
   formatConfig: {
     userPrefix: string
     assistantPrefix: string
@@ -22,11 +23,7 @@ interface Emits {
   (e: 'update:showAssistantMessages', value: boolean): void
   (e: 'update:showUserMessages', value: boolean): void
   (e: 'update:showResourceHint', value: boolean): void
-  (e: 'fileUpload', event: Event): void
-  (e: 'fileDrop', event: DragEvent): void
-  (e: 'dragOver', event: DragEvent): void
-  (e: 'dragEnter', event: DragEvent): void
-  (e: 'dragLeave', event: DragEvent): void
+  (e: 'fileUpload', file: File | null): void
   (e: 'clearFile'): void
 }
 
@@ -37,11 +34,6 @@ const { t } = useI18n()
 
 const closeTray = () => {
   emit('update:isOpen', false)
-}
-
-const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | 'showResourceHint', event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit(`update:${propName}`, target.checked)
 }
 </script>
 
@@ -58,66 +50,16 @@ const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | '
         </button>
       </div>
 
-      <!-- File Upload Section -->
-      <div class="file-upload-section">
-        <h4>{{ t('app.upload.title') }}</h4>
-        <div class="file-upload">
-          <label for="fileInput" class="file-label">
-            <div class="upload-area" :class="{ 'drag-over': isDragOver }" @dragover="emit('dragOver', $event)"
-              @dragenter="emit('dragEnter', $event)" @dragleave="emit('dragLeave', $event)"
-              @drop="emit('fileDrop', $event)">
-              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7,10 12,15 17,10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span v-if="!fileName && !isDragOver">{{ t('app.upload.title') }}</span>
-              <span v-else-if="isDragOver" class="drag-over-text">{{ t('app.upload.dragOver') }}</span>
-              <span v-else class="file-name">{{ fileName }}</span>
-            </div>
-          </label>
-          <input id="fileInput" type="file" accept=".txt,.text" @change="emit('fileUpload', $event)"
-            class="file-input" />
-          <button v-if="fileName" @click="emit('clearFile')" class="clear-btn">
-            {{ t('app.upload.clearFile') }}
-          </button>
-        </div>
-      </div>
+      <FileUpload :file-name="fileName" @file-selected="emit('fileUpload', $event)" @clear-file="emit('clearFile')" />
 
       <LanguageSelector />
       <ChatFormatSelector :model-value="formatConfig" @update:model-value="emit('update:formatConfig', $event)" />
 
-      <!-- Message Visibility Toggles -->
-      <div class="visibility-toggles">
-        <h4>{{ t('app.config.messageVisibility') }}</h4>
-        <div class="toggle-group">
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" :checked="showAssistantMessages" @change="handleToggle('showAssistantMessages', $event)"
-                class="toggle-input" />
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">{{ t('app.config.showAssistant') }}</span>
-            </label>
-          </div>
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" :checked="showUserMessages" @change="handleToggle('showUserMessages', $event)" class="toggle-input" />
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">{{ t('app.config.showUser') }}</span>
-            </label>
-          </div>
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" :checked="showResourceHint" @change="handleToggle('showResourceHint', $event)" class="toggle-input" />
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">Show Resource Hint</span>
-            </label>
-          </div>
-          <br />
-
-
-        </div>
-      </div>
+      <MessageVisibilityToggles :show-assistant-messages="showAssistantMessages" :show-user-messages="showUserMessages"
+        :show-resource-hint="showResourceHint"
+        @update:show-assistant-messages="emit('update:showAssistantMessages', $event)"
+        @update:show-user-messages="emit('update:showUserMessages', $event)"
+        @update:show-resource-hint="emit('update:showResourceHint', $event)" />
     </div>
   </div>
 </template>
@@ -186,155 +128,5 @@ const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | '
 .close-config svg {
   width: 20px;
   height: 20px;
-}
-
-/* File Upload Section in Config Tray */
-.file-upload-section {
-  margin-bottom: 1rem;
-}
-
-.file-upload-section h4 {
-  margin: 0 0 1rem 0;
-  color: #1f2937;
-  font-size: 1rem;
-}
-
-.file-upload {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.file-label {
-  cursor: pointer;
-  width: 100%;
-}
-
-.upload-area {
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  background: #f9fafb;
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-.upload-area:hover {
-  border-color: #9ca3af;
-  background: #f3f4f6;
-}
-
-.upload-area.drag-over {
-  border-color: #22c55e;
-  background: #f0fdf4;
-  color: #22c55e;
-}
-
-.upload-icon {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 0.5rem;
-  color: currentColor;
-}
-
-.drag-over-text {
-  font-weight: 600;
-  color: #22c55e;
-}
-
-.file-name {
-  font-weight: 600;
-  color: #374151;
-}
-
-.file-input {
-  display: none;
-}
-
-.clear-btn {
-  padding: 0.5rem 1rem;
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.clear-btn:hover {
-  background: #dc2626;
-}
-
-/* Message Visibility Toggles */
-.visibility-toggles {
-  margin-top: 1rem;
-}
-
-.visibility-toggles h4 {
-  margin: 0 0 1rem 0;
-  color: #1f2937;
-  font-size: 1rem;
-}
-
-.toggle-group {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.toggle-item {
-  display: flex;
-  align-items: center;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-input {
-  display: none;
-}
-
-.toggle-slider {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  background: #d1d5db;
-  border-radius: 12px;
-  transition: background 0.3s ease;
-}
-
-.toggle-slider::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-input:checked+.toggle-slider {
-  background: #3b82f6;
-}
-
-.toggle-input:checked+.toggle-slider::before {
-  transform: translateX(20px);
-}
-
-.toggle-text {
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
 }
 </style>
