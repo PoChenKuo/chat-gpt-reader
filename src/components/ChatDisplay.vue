@@ -29,8 +29,7 @@ const handlePrint = () => {
     t('app.print.title'),
     props.fileName,
     t,
-    props.showUserMessages,
-    props.showAssistantMessages
+    props.showResourceHint
   )
 }
 </script>

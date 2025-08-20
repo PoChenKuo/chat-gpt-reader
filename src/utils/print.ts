@@ -10,8 +10,7 @@ export const printChat = (
   title: string,
   fileName: string | null,
   t: TFunction,
-  showUserMessages: boolean,
-  showAssistantMessages: boolean
+  showResourceHint: boolean,
 ) => {
   if (messages.length === 0) {
     alert(t('app.print.noMessages'))
@@ -39,10 +38,10 @@ export const printChat = (
       <div class="messages">
         ${messages
           .map(
-            message => `
+            (message) => `
             <div class="message message-${message.role}">
               ${
-                showUserMessages && showAssistantMessages
+                showResourceHint
                   ? `
                 <div class="message-header">
                   <span class="message-role">${
@@ -53,8 +52,9 @@ export const printChat = (
                   : ''
               }
               <div class="message-content">${message.content}</div>
+              <br />
             </div>
-          `
+          `,
           )
           .join('')}
       </div>
