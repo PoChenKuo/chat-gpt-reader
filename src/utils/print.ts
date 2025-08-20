@@ -1,4 +1,4 @@
-import type { TFunction } from 'vue-i18n'
+import type { ComposerTranslation } from 'vue-i18n'
 
 export interface ChatMessage {
   role: 'user' | 'service'
@@ -9,7 +9,7 @@ export const printChat = (
   messages: ChatMessage[],
   title: string,
   fileName: string | null,
-  t: TFunction,
+  t: ComposerTranslation,
   showResourceHint: boolean,
 ) => {
   if (messages.length === 0) {

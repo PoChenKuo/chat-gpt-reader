@@ -6,20 +6,26 @@ interface Props {
   showUserMessages: boolean
   showResourceHint: boolean
 }
-
+type E = 'update:showAssistantMessages' | 'update:showUserMessages' | 'update:showResourceHint'
 interface Emits {
-  (e: 'update:showAssistantMessages', value: boolean): void
-  (e: 'update:showUserMessages', value: boolean): void
-  (e: 'update:showResourceHint', value: boolean): void
+  (e: E, value: boolean): void
 }
 
 defineProps<Props>()
 const emit = defineEmits<Emits>()
 const { t } = useI18n()
 
-const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | 'showResourceHint', event: Event) => {
+
+type PropName = 'showAssistantMessages' | 'showUserMessages' | 'showResourceHint'
+type UpdateEvent = `update:${PropName}`
+const updateEvent = {
+  showAssistantMessages: 'update:showAssistantMessages',
+  showUserMessages: 'update:showUserMessages',
+  showResourceHint: 'update:showResourceHint'
+} as const satisfies Record<PropName, UpdateEvent>
+const handleToggle = (propName: PropName, event: Event) => {
   const target = event.target as HTMLInputElement
-  emit(`update:${propName}`, target.checked)
+  emit(updateEvent[propName], target.checked)
 }
 </script>
 
@@ -30,8 +36,8 @@ const handleToggle = (propName: 'showAssistantMessages' | 'showUserMessages' | '
     <div class="toggle-group">
       <div class="toggle-item">
         <label class="toggle-label">
-          <input type="checkbox" :checked="showAssistantMessages" @change="handleToggle('showAssistantMessages', $event)"
-            class="toggle-input" />
+          <input type="checkbox" :checked="showAssistantMessages"
+            @change="handleToggle('showAssistantMessages', $event)" class="toggle-input" />
           <span class="toggle-slider"></span>
           <span class="toggle-text">{{ t('app.config.showAssistant') }}</span>
         </label>
