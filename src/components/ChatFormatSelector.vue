@@ -56,7 +56,7 @@ const updateCustomPrefixes = (userPrefix: string, assistantPrefix: string) => {
 // --- Watchers ---
 watch(selectedFormatId, (newFormatId) => {
   const format = chatFormats.value.find(f => f.id === newFormatId)
-  if (format && format.id !== 'custom') {
+  if (format) {
     updateCustomPrefixes(format.userPrefix, format.assistantPrefix)
   }
   updateModelValue()
